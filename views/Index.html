@@ -1,11 +1,119 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="//unpkg.com/alpinejs" defer></script>
+    <script src="app.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 30px; background-color: #f7fafc; color: #2d3748; }
+        .dashboard-container { max-width: 1000px; margin: 0 auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .filter-group { display: flex; gap: 15px; margin-bottom: 25px; background: #edf2f7; padding: 15px; border-radius: 6px; flex-wrap: wrap; }
+        .control-item { flex: 1; min-width: 200px; display: flex; flex-direction: column; }
+        select { padding: 8px 12px; margin-top: 6px; border: 1px solid #cbd5e0; border-radius: 4px; font-size: 14px; background: white; }
+        select:disabled { background-color: #e2e8f0; cursor: not-allowed; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background-color: #f7fafc; color: #4a5568; font-weight: 600; }
+        .bar-container { background-color: #edf2f7; border-radius: 4px; width: 100%; max-width: 200px; overflow: hidden; }
+        .bar-fill { background-color: #3182ce; height: 16px; transition: width 0.4s ease; }
+    </style>
+    <title>Recapsheet Grade Analysis Dashboard</title>
 </head>
-<body>
-    
+<body x-data="App()" x-init="init()">
+
+    <div class="dashboard-container">
+        <h1>📊 Grade Analysis Dashboard</h1>
+        <p style="color: #718096; margin-top: -10px; margin-bottom: 25px;">Select filter criteria down below step-by-step to compute and display your percentage-wise grade distribution.</p>
+
+        <div class="filter-group">
+            
+            <div class="control-item">
+                <label style="font-weight: bold;">1. Academic Year</label>
+                <select @change="handleYearChange($event.target.value)" :value="selectedYear">
+                    <option value="">-- Choose Year --</option>
+                    <template x-for="yr in years">
+                        <option :value="yr" x-text="yr"></option>
+                    </template>
+                </select>
+            </div>
+
+            <div class="control-item">
+                <label style="font-weight: bold;">2. Semester Term</label>
+                <select :disabled="!selectedYear" @change="handleSemesterChange($event.target.value)" :value="selectedSemester">
+                    <option value="">-- Choose Semester --</option>
+                    <template x-for="sem in semesters">
+                        <option :value="sem" x-text="sem"></option>
+                    </template>
+                </select>
+            </div>
+
+            <div class="control-item">
+                <label style="font-weight: bold;">3. Class Batch Section</label>
+                <select :disabled="!selectedSemester" @change="handleClassChange($event.target.value)" :value="selectedClass">
+                    <option value="">-- Choose Batch --</option>
+                    <template x-for="cls in classes">
+                        <option :value="cls" x-text="cls"></option>
+                    </template>
+                </select>
+            </div>
+
+            <div class="control-item">
+                <label style="font-weight: bold;">4. Subject Course</label>
+                <select :disabled="!selectedClass" @change="handleCourseChange($event.target.value)" :value="selectedRid">
+                    <option value="">-- Choose Course --</option>
+                    <template x-for="crs in courses" :key="crs.rid">
+                        <option :value="crs.rid" x-text="crs.code + ' - ' + crs.title"></option>
+                    </template>
+                </select>
+            </div>
+
+        </div>
+
+        <template x-if="analysisData">
+            <div>
+                <div style="border-left: 4px solid #3182ce; padding-left: 15px; margin-bottom: 20px;">
+                    <h2 style="margin: 0;" x-text="analysisData.meta.title + ' (' + analysisData.meta.code + ')'"></h2>
+                    <p style="margin: 5px 0 0 0; color: #4a5568;">
+                        Batch Group Section: <strong x-text="analysisData.meta.class"></strong> | 
+                        Timeline: <strong x-text="analysisData.meta.semester + ' ' + analysisData.meta.year"></strong> | 
+                        Total Records: <strong x-text="analysisData.totalStudents"></strong>
+                    </p>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Grade Designation</th>
+                            <th>Student Frequency Count</th>
+                            <th>Percentage Allocation Metrics</th>
+                            <th>Visual Progress Metric Representation Bar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="row in analysisData.distribution" :key="row.grade">
+                            <tr>
+                                <td style="font-weight: bold;" x-text="row.grade"></td>
+                                <td x-text="row.count"></td>
+                                <td style="color: #2b6cb0; font-weight: bold;" x-text="row.percentage"></td>
+                                <td>
+                                    <div class="bar-container">
+                                        <div class="bar-fill" :style="'width: ' + row.percentage"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </template>
+
+        <template x-if="!analysisData">
+            <div style="text-align: center; padding: 50px; color: #a0aec0; border: 2px dashed #e2e8f0; border-radius: 6px;">
+                <p style="font-size: 16px; margin: 0;">Complete step filters 1 through 4 to compute and display your grade matrix report data metrics grid sheet panels.</p>
+            </div>
+        </template>
+    </div>
+
 </body>
 </html>
