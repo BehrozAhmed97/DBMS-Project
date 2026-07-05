@@ -2,6 +2,7 @@ import express from "express";
 const router = express.Router();
 const { SQL } = await import("../utils/db.js");
 
+
 router.get("/years", async (req, res) => {
     try {
         const years = await SQL`SELECT DISTINCT year FROM recap ORDER BY year DESC;`;
@@ -11,6 +12,7 @@ router.get("/years", async (req, res) => {
         res.status(500).json({ error: "Failed to load years" });
     }
 });
+
 
 router.get("/semesters-by-year", async (req, res) => {
     try {
@@ -24,6 +26,7 @@ router.get("/semesters-by-year", async (req, res) => {
         res.status(500).json({ error: "Failed to load semesters" });
     }
 });
+
 
 router.get("/classes-by-semester", async (req, res) => {
     try {
@@ -41,6 +44,7 @@ router.get("/classes-by-semester", async (req, res) => {
         res.status(500).json({ error: "Failed to load classes" });
     }
 });
+
 
 router.get("/courses-by-class", async (req, res) => {
     try {
@@ -78,14 +82,13 @@ router.get("/recap-analysis/:rid", async (req, res) => {
         }
 
         const gradeCounts = await SQL`
-            WITH StudentTotals AS (
+            SELECT g.grade, COUNT(s.regno) as student_count
+            FROM (
                 SELECT regno, SUM(marks) as total_score
                 FROM marks
                 WHERE rid = ${rid}
                 GROUP BY regno
-            )
-            SELECT g.grade, COUNT(s.regno) as student_count
-            FROM StudentTotals s
+            ) s
             JOIN grade g ON s.total_score >= g.start AND s.total_score <= g."end"
             GROUP BY g.grade
             ORDER BY g.grade;
