@@ -1,19 +1,19 @@
 function App() {
     return {
-        // Dropdown option arrays
+      
         years: [],
         semesters: [],
         classes: [],
         courses: [],
 
-        // App selections states
+       
         selectedYear: "",
         selectedSemester: "",
         selectedClass: "",
         selectedRid: "",
         analysisData: null,
 
-        // Triggers instantly on view load
+        
         async init() {
             try {
                 this.years = await fetch("/api/years").then(res => res.json());
@@ -22,10 +22,10 @@ function App() {
             }
         },
 
-        // Triggered when a year is selected
+    
         async handleYearChange(year) {
             this.selectedYear = year;
-            // Clear out all downstream states
+           
             this.selectedSemester = "";
             this.selectedClass = "";
             this.selectedRid = "";

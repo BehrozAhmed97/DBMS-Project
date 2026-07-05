@@ -2,7 +2,6 @@ import express from "express";
 const router = express.Router();
 const { SQL } = await import("../utils/db.js");
 
-// Step 1: GET distinct years available
 router.get("/years", async (req, res) => {
     try {
         const years = await SQL`SELECT DISTINCT year FROM recap ORDER BY year DESC;`;
@@ -13,7 +12,6 @@ router.get("/years", async (req, res) => {
     }
 });
 
-// Step 2: GET distinct semesters for a selected year
 router.get("/semesters-by-year", async (req, res) => {
     try {
         const { year } = req.query;
@@ -27,7 +25,6 @@ router.get("/semesters-by-year", async (req, res) => {
     }
 });
 
-// Step 3: GET distinct classes/batches for a chosen year and semester
 router.get("/classes-by-semester", async (req, res) => {
     try {
         const { year, semester } = req.query;
@@ -45,7 +42,6 @@ router.get("/classes-by-semester", async (req, res) => {
     }
 });
 
-// Step 4: GET courses for a chosen year, semester, and class batch
 router.get("/courses-by-class", async (req, res) => {
     try {
         const { year, semester, classBatch } = req.query;
@@ -65,7 +61,7 @@ router.get("/courses-by-class", async (req, res) => {
     }
 });
 
-// Final Step: Fetch percentage grade calculations for a selected Recap Sheet
+
 router.get("/recap-analysis/:rid", async (req, res) => {
     try {
         const { rid } = req.params;
