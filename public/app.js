@@ -43,7 +43,6 @@ function App() {
             }
         },
 
-        // Triggered when a semester is selected
         async handleSemesterChange(semester) {
             this.selectedSemester = semester;
             this.selectedClass = "";
@@ -62,7 +61,6 @@ function App() {
             }
         },
 
-        // Triggered when a class/batch is selected
         async handleClassChange(classBatch) {
             this.selectedClass = classBatch;
             this.selectedRid = "";
@@ -79,7 +77,6 @@ function App() {
             }
         },
 
-        // Triggered when a course is selected
         async handleCourseChange(rid) {
             this.selectedRid = rid;
             this.analysisData = null;
